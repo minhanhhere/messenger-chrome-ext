@@ -25,7 +25,8 @@ var re_strip_script = /(<script.+?<\/script>)/g;
 function getMinMaxTime(messages) {
     var times = [];
     for (var i = messages.length - 1; i >= 0; i--) {
-        times.push(messages[i].time);
+        var time = messages[i].time;
+        times.push(time);
     };
     return {
         max: Math.max.apply(Math, times),
@@ -87,6 +88,17 @@ function createNotification(message) {
     }, 5000);
 }
 
+function filterMessage(messages) {
+    var filter = [];
+    for (var i = messages.length - 1; i >= 0; i--) {
+        var message = messages[i];
+        if (message.time > last_check) {
+            filter.push(message);
+        }
+    };
+    return filter;
+}
+
 function sendNotyToContent(messages) {
     chrome.tabs.query({
         active: true,
@@ -104,17 +116,11 @@ function sendNotification(messages) {
     if (messages.length == 0) {
         return;
     }    
-
     var time = getMinMaxTime(messages);
-
     if (time.min > last_check) {
         last_check = time.max;
         console.log('' + new Date() + ': set last_check = ' + last_check);
         sendNotyToContent(messages);
-        // for (var i = messages.length - 1; i >= 0; i--) {
-        //     var message = messages[i];
-        //     createNotification(message);
-        // };
     }
 }
 
@@ -130,7 +136,7 @@ function checkFacebook() {
             var messages = parseMessage(all_items);
 
             setBrowserAction(messages);
-            sendNotification(messages);
+            sendNotification(filterMessage(messages));
         }
     });
 }
