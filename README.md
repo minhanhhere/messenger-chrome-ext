@@ -14,4 +14,5 @@ How to use:
 5. Browse to the folder in step 2
 
 **Assuming there are no errors, the extension should load into your browser**
+
 **YOU'D BETTER RESTART CHROME NOW**
